@@ -2,6 +2,7 @@
 
 @(require (for-label advent-of-code
                      racket/base
+                     racket/contract
                      net/url))
 
 @title{Advent of Code}
@@ -11,7 +12,7 @@
 
 A package for fetching Advent of Code input.
 
-;;@defmodule[advent-of-code/input]
+@defmodule[advent-of-code/input #:no-declare]
 
 @defproc[(open-aoc-input [session aoc-session?]
                          [year advent-year?]
@@ -46,7 +47,7 @@ A year since 2015.
 
 Equivalent to @racket[(and/c exact-integer? (>=/c 2015))].
 
-;;@defmodule[advent-of-code/request]
+@defmodule[advent-of-code/request #:no-declare]
 
 Procedures for making API requests. Reprovided by @racket[advent-of-code].
 
@@ -73,7 +74,7 @@ Makes a request to the Advent of Code website, using the session cookie.
 
 Raises @racket[exn:fail:aoc] if the request fails.
 
-;;@defmodule[advent-of-code/meta]
+@defmodule[advent-of-code/meta #:no-declare]
 
 Meta and environment functions. Reprovided by @racket[advent-of-code].
 
