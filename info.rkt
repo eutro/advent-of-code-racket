@@ -7,4 +7,4 @@
 (define version "1.0")
 (define pkg-authors '(eutro))
 (define raco-commands
-  '(("aoc" (submod advent-of-code main) "Advent of Code related commands" #f)))
+  '(("aoc" (submod advent-of-code main) "Fetch Advent of Code puzzle input" #f)))
