@@ -17,6 +17,7 @@
   (define sessionb (box #f))
   (define yearb (box #f))
   (define dayb (box #f))
+  (define cacheb (box #t))
 
   (command-line
    #:program (short-program+command-name)
@@ -24,6 +25,9 @@
    [("-s" "--session") session "The session cookie" (set-box! sessionb session)]
    [("-y" "--year") year "The year to query for" (set-box! yearb (string->number year))]
    [("-d" "--day") day "The day to fetch the input for" (set-box! dayb (string->number day))]
+   #:once-any
+   [("-c" "--cache") cache-dir "Override the cache directory" (set-box! cacheb cache-dir)]
+   [("--no-cache") "Disable caching" (set-box! cacheb #f)]
    #:args ()
    (void))
 
@@ -46,5 +50,6 @@
           ((if (= (date-month now) 12) values sub1)
            (date-year now)))
       (or (unbox dayb)
-          (max 1 (min 25 (date-day now)))))
+          (max 1 (min 25 (date-day now))))
+      #:cache (unbox cacheb))
      (current-output-port))))
