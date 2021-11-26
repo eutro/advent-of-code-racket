@@ -34,10 +34,10 @@
   (define matches (regexp-match #px"<article><p>(.*)</p></article>" response))
   (if matches
       (regexp-replace*
-       #px"  "
+       #px"</?.+?>"
        (regexp-replace*
-        #px"</?.+?>"
+        #px"  |</?br>"
         (cadr matches)
-        "")
-       "\n")
+        "\n")       
+       "")
       #f))

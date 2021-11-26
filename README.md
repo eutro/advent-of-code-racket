@@ -17,7 +17,7 @@ Fetch the puzzle input for a given day.
 ---
 
 ```sh
-raco aoc [-y year] [-d day] [-a answer]
+raco aoc [-y year] [-d day] -a <part> <answer>
 ```
 
 Submit an answer for the given puzzle.
