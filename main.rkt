@@ -31,8 +31,9 @@
    #:once-any
    [("-c" "--cache") cache-dir "Override the cache directory" (set-box! cacheb cache-dir)]
    [("--no-cache") "Disable caching" (set-box! cacheb #f)]
-   [("-a" "--answer") answer "An answer to submit instead of fetching input"
-                      (set-box! answerb answer)]
+   [("-a" "--answer") part answer
+                      "An answer to submit instead of fetching input"
+                      (set-box! answerb (cons (string->number part) answer))]
    #:args ()
    (void))
 
@@ -56,7 +57,8 @@
     (define day
       (or (unbox dayb)
           (max 1 (min 25 (date-day now)))))
-    (if (unbox answerb)
-        (displayln (aoc-submit session year day (unbox answerb)))
+    (define ans (unbox answerb))
+    (if ans
+        (displayln (aoc-submit session year day (car ans) (cdr ans)))
         (copy-port (open-aoc-input session year day #:cache (unbox cacheb))
                    (current-output-port)))))

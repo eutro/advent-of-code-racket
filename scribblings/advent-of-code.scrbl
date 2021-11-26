@@ -69,6 +69,7 @@ This module also reprovides @racket[advent-year?] and @racket[advent-day?]
 @defproc[(aoc-submit [session aoc-session?]
                      [year advent-year?]
                      [day advent-day?]
+                     [part (or/c 1 2)]
                      [answer any/c])
          string?]{
 
@@ -83,6 +84,7 @@ Returns the string that the Advent of Code site returns, to be read by a human.
 @defproc[(aoc-submit* [session aoc-session?]
                       [year advent-year?]
                       [day advent-day?]
+                      [part (or/c 1 2)]
                       [answer any/c])
          input-port?]{
 
