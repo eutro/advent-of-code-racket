@@ -12,7 +12,7 @@
                                 (#:cache (or/c boolean? path-string?))
                                 string?)]
           [advent-day? flat-contract?]
-          [advent-year? flat-contract]))
+          [advent-year? flat-contract?]))
 
 (define advent-day? (integer-in 1 25))
 (define advent-year? (and/c exact-integer? (>=/c 2015)))

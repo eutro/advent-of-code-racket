@@ -3,6 +3,7 @@
 @(require (for-label advent-of-code
                      racket/base
                      racket/contract
+                     net/http-easy
                      net/url))
 
 @title{Advent of Code}
@@ -59,6 +60,38 @@ Equivalent to @racket[(and/c exact-integer? (>=/c 2015))].
 
 }
 
+@section{Automatic Submission}
+
+@defmodule[advent-of-code/answer #:no-declare]
+
+This module also reprovides @racket[advent-year?] and @racket[advent-day?]
+
+@defproc[(aoc-submit [session aoc-session?]
+                     [year advent-year?]
+                     [day advent-day?]
+                     [answer any/c])
+         string?]{
+
+Submit @racket[answer] as an answer to the given puzzle.
+
+@racket[answer] will be formatted with @racket[display] before being submitted.
+
+Returns the string that the Advent of Code site returns, to be read by a human.
+
+}
+
+@defproc[(aoc-submit* [session aoc-session?]
+                      [year advent-year?]
+                      [day advent-day?]
+                      [answer any/c])
+         input-port?]{
+
+Like @racket[aoc-submit], but yields the full port containing the response to the request.
+
+This is the HTML page that the site shows the user upon submitting an answer.
+
+}
+
 @section{Requests}
 
 @defmodule[advent-of-code/request #:no-declare]
@@ -88,11 +121,15 @@ Raised by @racket[aoc-request] if a request fails.
 @defproc[(aoc-request [session aoc-session?]
                       [path any/c]
                       ...
-                      [#:cache cache (or/c boolean? path-string?) #f])
+                      [#:cache cache (or/c boolean? path-string?) #f]
+                      [#:post post? (or/c #f bytes? string? input-port? payload-procedure/c) #f])
          input-port?]{
 
-Makes an HTTP GET request to the Advent of Code website,
+Makes an HTTP GET or POST request to the Advent of Code website,
 using the given @racket[session] cookie.
+
+If @racket[post?] is supplied, then it is POST-ed as the payload,
+otherwise a simple GET request is made.
 
 The @racket[cache] argument specifies how the data should be cached.
 

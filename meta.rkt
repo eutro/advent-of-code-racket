@@ -3,6 +3,7 @@
 (require racket/contract/base
          racket/runtime-path
          racket/file
+         racket/string
          advent-of-code/request
          net/sendurl
          net/url)
@@ -70,4 +71,4 @@
            #f
            (lambda () (- csec month-seconds)))))
     (refresh-session!))
-  (file->string session-file))
+  (string-trim (file->string session-file)))

@@ -2,11 +2,13 @@
 
 (require advent-of-code/request
          advent-of-code/input
+         advent-of-code/answer
          advent-of-code/meta)
 
 (provide (all-from-out
           advent-of-code/request
           advent-of-code/input
+          advent-of-code/answer
           advent-of-code/meta))
 
 (module+ main
@@ -18,6 +20,7 @@
   (define yearb (box #f))
   (define dayb (box #f))
   (define cacheb (box #t))
+  (define answerb (box #f))
 
   (command-line
    #:program (short-program+command-name)
@@ -28,6 +31,8 @@
    #:once-any
    [("-c" "--cache") cache-dir "Override the cache directory" (set-box! cacheb cache-dir)]
    [("--no-cache") "Disable caching" (set-box! cacheb #f)]
+   [("-a" "--answer") answer "An answer to submit instead of fetching input"
+                      (set-box! answerb answer)]
    #:args ()
    (void))
 
@@ -43,13 +48,15 @@
                           (printf "Try deleting and re-entering ~a~n" session-file)]))
                      (raise e))])
     (define now (current-aoc-time))
-    (copy-port
-     (open-aoc-input
-      (or (unbox sessionb) (find-session))
+    (define session (or (unbox sessionb) (find-session)))
+    (define year
       (or (unbox yearb)
           ((if (= (date-month now) 12) values sub1)
-           (date-year now)))
+           (date-year now))))
+    (define day
       (or (unbox dayb)
-          (max 1 (min 25 (date-day now))))
-      #:cache (unbox cacheb))
-     (current-output-port))))
+          (max 1 (min 25 (date-day now)))))
+    (if (unbox answerb)
+        (displayln (aoc-submit session year day (unbox answerb)))
+        (copy-port (open-aoc-input session year day #:cache (unbox cacheb))
+                   (current-output-port)))))

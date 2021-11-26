@@ -1,6 +1,6 @@
 #lang info
 (define collection "advent-of-code")
-(define deps '("base" "net-lib"))
+(define deps '("base" "net-lib" "http-easy"))
 (define build-deps '("scribble-lib" "racket-doc" "net-doc"))
 (define scribblings '(("scribblings/advent-of-code.scrbl" ())))
 (define pkg-desc "Package for fetching Advent of Code input.")

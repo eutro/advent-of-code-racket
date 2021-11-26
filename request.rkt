@@ -4,15 +4,16 @@
          racket/format
          racket/string
          racket/port
-         racket/runtime-path
          racket/file
          net/url
+         net/http-easy
          file/sha1)
 
 (provide (contract-out
           [aoc-url url?]
           [aoc-request (->* (aoc-session?)
-                            (#:cache (or/c boolean? path-string?))
+                            (#:cache (or/c boolean? path-string?)
+                             #:post (or/c #f bytes? string? input-port? payload-procedure/c))
                             #:rest (listof any/c)
                             input-port?)]
           [aoc-session? predicate/c])
@@ -34,7 +35,10 @@
   (define dir-name (hash-session session))
   (build-path root dir-name))
 
-(define (aoc-request session #:cache [cache #f] . path)
+(define (aoc-request session
+                     #:cache [cache #f]
+                     #:post [post? #f]
+                     . path)
   (define str-path (map ~a path))
   (define cache-file
     (cond
@@ -52,28 +56,31 @@
     [(and cache-file (file-exists? cache-file))
      (open-input-file cache-file)]
     [else
-     (define-values (pp headers)
-       (get-pure-port/headers
-        (combine-url/relative
-         aoc-url
-         (string-join str-path "/"))
-        (list (format "cookie: session=~a" session))
-        #:status? #t))
-     (define status-line (car (string-split headers "\r\n")))
-     (define status-code (cadr (string-split status-line)))
-     (unless (string=? status-code "200")
-       (raise (exn:fail:aoc
-               (format "couldn't fetch puzzle input~n  status: ~a~n  response: ~s"
-                       status-line
-                       (port->string pp))
-               (current-continuation-marks)
-               status-code)))
+     (define url (combine-url/relative aoc-url (string-join str-path "/")))
+     (define req-headers (hash 'cookie (format "session=~a" session)))
+     (define (get-resp)
+       ((if post? post get)
+        url
+        #:stream? #t
+        #:headers req-headers
+        #:data post?))
+     (define resp (get-resp))
+     (define status-code (response-status-code resp))
+     (cond
+       [(not (= status-code 200))
+        (raise (exn:fail:aoc
+                (format "couldn't make request~n  status: ~a~n  headers: ~s~n  body: ~s"
+                        (response-status-line resp)
+                        (response-headers resp)
+                        (response-body resp))
+                (current-continuation-marks)
+                status-code))])
      (cond
        [cache-file
         (make-parent-directory* cache-file)
-        (define input-bytes (port->bytes pp))
+        (define input-bytes (port->bytes (response-output resp)))
         (call-with-output-file cache-file
           (lambda (file-out)
             (write-bytes input-bytes file-out)))
         (open-input-bytes input-bytes)]
-       [else pp])]))
+       [else (response-output resp)])]))
