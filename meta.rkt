@@ -54,6 +54,7 @@
     (when (eof-object? session)
       (exit 1))
     (with-output-to-file session-file
+      #:exists 'replace
       (lambda ()
         (display session)
         (flush-output)))
