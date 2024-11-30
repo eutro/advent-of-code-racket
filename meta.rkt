@@ -27,7 +27,7 @@
           (if (eq? default 'y) "Y" "y")
           (if (eq? default 'n) "N" "n"))
   (flush-output)
-  (define line (read-line))
+  (define line (read-line (current-input-port) 'any))
   (if (eof-object? line)
       #f
       (case (string-downcase line)
@@ -50,7 +50,7 @@
     (displayln "- Firefox: \"Storage\" tab (Shift + F9)")
     (displayln "- Chrome: \"Application\" tab")
     (displayln "Enter the contents of your session cookie below:")
-    (define session (read-line))
+    (define session (read-line (current-input-port) 'any))
     (when (eof-object? session)
       (exit 1))
     (with-output-to-file session-file
