@@ -1,15 +1,14 @@
 #lang racket/base
 
-(require advent-of-code/request
-         advent-of-code/input
-         advent-of-code/answer
-         advent-of-code/meta)
+(require "request.rkt"
+         "input.rkt"
+         "answer.rkt"
+         "meta.rkt")
 
-(provide (all-from-out
-          advent-of-code/request
-          advent-of-code/input
-          advent-of-code/answer
-          advent-of-code/meta))
+(provide (all-from-out "request.rkt"
+                       "input.rkt"
+                       "answer.rkt"
+                       "meta.rkt"))
 
 (module+ main
   (require racket/cmdline
@@ -17,6 +16,7 @@
            racket/port)
 
   (define sessionb (box #f))
+  (define contactb (box #f))
   (define yearb (box #f))
   (define dayb (box #f))
   (define cacheb (box #t))
@@ -26,6 +26,7 @@
    #:program (short-program+command-name)
    #:once-each
    [("-s" "--session") session "The session cookie" (set-box! sessionb session)]
+   [("-i" "--contact-info") email-or-url "Contact information" (set-box! contactb email-or-url)]
    [("-y" "--year") year "The year to query for" (set-box! yearb (string->number year))]
    [("-d" "--day") day "The day to fetch the input for" (set-box! dayb (string->number day))]
    #:once-any
@@ -50,6 +51,7 @@
                      (raise e))])
     (define now (current-aoc-time))
     (define session (or (unbox sessionb) (find-session)))
+    (define contact (or (unbox contactb) (find-contact-info)))
     (define year
       (or (unbox yearb)
           ((if (= (date-month now) 12) values sub1)
@@ -59,6 +61,8 @@
           (max 1 (min 25 (date-day now)))))
     (define ans (unbox answerb))
     (if ans
-        (displayln (aoc-submit session year day (car ans) (cdr ans)))
-        (copy-port (open-aoc-input session year day #:cache (unbox cacheb))
+        (displayln (aoc-submit session year day (car ans) (cdr ans)
+                               #:contact-info contact))
+        (copy-port (open-aoc-input session year day #:cache (unbox cacheb)
+                                   #:contact-info contact)
                    (current-output-port)))))

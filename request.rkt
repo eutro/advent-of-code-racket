@@ -7,22 +7,19 @@
          racket/file
          net/url
          net/http-easy
-         file/sha1)
+         file/sha1
+         "meta.rkt")
 
 (provide (contract-out
-          [aoc-url url?]
           [aoc-request (->* (aoc-session?)
                             (#:cache (or/c boolean? path-string?)
-                             #:post (or/c #f bytes? string? input-port? payload-procedure/c))
+                             #:post (or/c #f bytes? string? input-port? payload-procedure/c)
+                             #:contact-info (or/c #f string?)
+                             #:user-agent (or/c bytes? string?))
                             #:rest (listof any/c)
-                            input-port?)]
-          [aoc-session? predicate/c])
+                            input-port?)])
+         aoc-url aoc-session?
          (struct-out exn:fail:aoc))
-
-(define (aoc-session? s)
-  (string? s))
-
-(define aoc-url (string->url "https://adventofcode.com"))
 
 (struct exn:fail:aoc exn:fail (status))
 
@@ -38,6 +35,11 @@
 (define (aoc-request session
                      #:cache [cache #f]
                      #:post [post? #f]
+                     #:contact-info [contact-info (find-contact-info)]
+                     #:user-agent [user-agent
+                                   (if contact-info
+                                       (contact-info->user-agent contact-info)
+                                       (current-user-agent))]
                      . path)
   (define str-path (map ~a path))
   (define cache-file
@@ -63,7 +65,8 @@
         url
         #:stream? #t
         #:headers req-headers
-        #:data post?))
+        #:data post?
+        #:user-agent user-agent))
      (define resp (get-resp))
      (define status-code (response-status-code resp))
      (cond
