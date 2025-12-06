@@ -20,27 +20,26 @@ A package for fetching Advent of Code input.
 @defproc[(open-aoc-input [session aoc-session?]
                          [year advent-year?]
                          [day advent-day?]
-                         [#:cache cache (or/c boolean? path-string?) #f])
+                         [#:cache cache (or/c boolean? path-string?) #t])
          input-port?]{
 
 Fetch the puzzle input for @racket[day] of @racket[year] as an input port.
-
-If you are using this in your puzzle solution, use of the @racket[cache]
-argument is highly recommended.
-
 See @racket[aoc-request] for information on session, caching and error handling.
+
+@history[#:changed "1.0.3" @elem{Made @racket[cache] be @racket[#t] by default.}]
 
 }
 
 @defproc[(fetch-aoc-input [session aoc-session?]
                           [year advent-year?]
                           [day advent-day?]
-                          [#:cache cache (or/c boolean? path-string?) #f])
+                          [#:cache cache (or/c boolean? path-string?) #t])
          string?]{
-
 Fetch the input data as a string, using @racket[open-aoc-input].
+See @racket[open-aoc-input] and @racket[aoc-request] for information
+on session, caching and error handling.
 
-See @racket[open-aoc-input].
+@history[#:changed "1.0.3" @elem{Made @racket[cache] be @racket[#t] by default.}]
 
 }
 
@@ -98,7 +97,7 @@ This is the HTML page that the site shows the user upon submitting an answer.
 
 @defmodule[advent-of-code/request #:no-declare]
 
-Procedures for making API requests. Reprovided by @racket[advent-of-code].
+Procedures for making API requests. Reprovided by @racketmodname[advent-of-code].
 
 @defproc[(aoc-session? [x any/c]) boolean?]{
 
@@ -162,7 +161,7 @@ Raises @racket[exn:fail:aoc] if the request fails.
 
 @defmodule[advent-of-code/meta #:no-declare]
 
-Meta and environment functions. Reprovided by @racket[advent-of-code].
+Meta and environment functions. Reprovided by @racketmodname[advent-of-code].
 
 @defproc[(current-aoc-time) date?]{
 

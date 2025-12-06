@@ -17,8 +17,8 @@
 (define advent-day? (integer-in 1 25))
 (define advent-year? (and/c exact-integer? (>=/c 2015)))
 
-(define (open-aoc-input session year day #:cache [cache #f])
+(define (open-aoc-input session year day #:cache [cache #t])
   (aoc-request session year "day" day "input" #:cache cache))
 
-(define (fetch-aoc-input session year day #:cache [cache #f])
+(define (fetch-aoc-input session year day #:cache [cache #t])
   (port->string (open-aoc-input session year day #:cache cache)))
